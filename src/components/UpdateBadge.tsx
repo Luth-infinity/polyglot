@@ -48,16 +48,15 @@ export function UpdateBadge() {
           onClick={onClick}
           disabled={status === "downloading"}
           className={cn(
-            "pg-gradient pg-glow relative flex h-6 items-center gap-1.5 overflow-hidden rounded-full pr-2.5 pl-2 text-[11px] font-medium text-white transition-all",
-            status !== "downloading" && "hover:brightness-110 active:brightness-95",
-            status === "available" && "pg-pulse"
+            "bg-primary text-primary-foreground relative flex h-6 items-center gap-1.5 overflow-hidden rounded-full pr-2.5 pl-2 text-[11px] font-medium shadow-sm transition-all",
+            status !== "downloading" && "hover:opacity-90"
           )}
         >
           {icon}
           {label}
           {status === "downloading" && progress !== null && (
             <span
-              className="absolute inset-x-0 bottom-0 h-0.5 bg-white/70 transition-[width] duration-200"
+              className="bg-primary-foreground/60 absolute inset-x-0 bottom-0 h-0.5 transition-[width] duration-200"
               style={{ width: `${progress}%` }}
             />
           )}
@@ -90,11 +89,11 @@ export function UpdateSection() {
   }[status];
 
   return (
-    <div className="bg-card pg-sheen flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5">
+    <div className="bg-card flex items-center justify-between gap-3 rounded-2xl border px-3 py-2.5 shadow-sm">
       <div className="min-w-0">
         <p className="text-xs font-medium">
           Polyglot{" "}
-          <span className="pg-gradient-text font-semibold">
+          <span className="font-semibold tabular-nums">
             {currentVersion ? `v${currentVersion}` : "—"}
           </span>
         </p>
@@ -111,7 +110,7 @@ export function UpdateSection() {
       {status === "available" ? (
         <button
           onClick={install}
-          className="pg-gradient pg-glow flex h-7 shrink-0 items-center gap-1.5 rounded-md px-3 text-xs font-medium text-white hover:brightness-110"
+          className="bg-primary text-primary-foreground flex h-7 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-xs font-medium shadow-sm hover:opacity-90"
         >
           <ArrowDownToLine className="size-3" />
           Install
@@ -119,7 +118,7 @@ export function UpdateSection() {
       ) : status === "ready" ? (
         <button
           onClick={restart}
-          className="pg-gradient pg-glow flex h-7 shrink-0 items-center gap-1.5 rounded-md px-3 text-xs font-medium text-white hover:brightness-110"
+          className="bg-primary text-primary-foreground flex h-7 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-xs font-medium shadow-sm hover:opacity-90"
         >
           <RotateCw className="size-3" />
           Restart
@@ -128,7 +127,7 @@ export function UpdateSection() {
         <button
           onClick={() => check(true)}
           disabled={busy}
-          className="border-border hover:bg-accent/60 text-muted-foreground hover:text-foreground flex h-7 shrink-0 items-center gap-1.5 rounded-md border px-3 text-xs font-medium transition-colors disabled:opacity-50"
+          className="border-border hover:bg-accent text-muted-foreground hover:text-foreground flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-xs font-medium transition-colors disabled:opacity-50"
         >
           {busy ? <Loader2 className="size-3 animate-spin" /> : <RotateCw className="size-3" />}
           Check

@@ -60,7 +60,7 @@ export function TranslatePanel() {
   return (
     <div className="flex h-full flex-col gap-2.5 p-3">
       {/* Language bar */}
-      <div className="pg-sheen bg-card flex shrink-0 items-center gap-1 rounded-lg border p-1">
+      <div className="bg-card flex shrink-0 items-center gap-1 rounded-2xl border p-1">
         <LanguageSelector
           value={sourceLang}
           onChange={setSourceLang}
@@ -95,7 +95,7 @@ export function TranslatePanel() {
 
       {/* Panes */}
       <div className="grid min-h-0 flex-1 grid-cols-2 gap-2.5">
-        <Card className="pg-sheen overflow-hidden">
+        <Card className="overflow-hidden">
           <CardContent className="relative">
             <textarea
               value={sourceText}
@@ -132,7 +132,7 @@ export function TranslatePanel() {
           </CardFooter>
         </Card>
 
-        <Card className="pg-sheen bg-card/60 overflow-hidden">
+        <Card className="overflow-hidden">
           <CardContent ref={outputRef} className="overflow-y-auto p-3">
             {translatedText ? (
               <p
@@ -141,7 +141,7 @@ export function TranslatePanel() {
               >
                 {translatedText}
                 {isTranslating && (
-                  <span className="bg-primary pg-caret ml-0.5 inline-block h-3.5 w-0.5 translate-y-0.5" />
+                  <span className="bg-foreground pg-caret ml-0.5 inline-block h-3.5 w-0.5 translate-y-0.5" />
                 )}
               </p>
             ) : isTranslating ? (
@@ -197,7 +197,6 @@ export function TranslatePanel() {
 
       <div className="flex shrink-0 justify-end">
         <Button
-          variant="gradient"
           size="sm"
           onClick={() => translate()}
           disabled={!canTranslate}

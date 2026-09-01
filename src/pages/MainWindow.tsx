@@ -52,7 +52,7 @@ export function MainWindow() {
     <Tabs
       value={activeTab}
       onValueChange={handleTabChange}
-      className="pg-ambient bg-background flex h-screen flex-col gap-0 overflow-hidden"
+      className="bg-background flex h-screen flex-col gap-0 overflow-hidden"
     >
       <TitleBar />
 

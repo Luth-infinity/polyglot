@@ -16,7 +16,7 @@ export function TitleBar() {
 
   return (
     <header
-      className="pg-hairline relative flex h-11 shrink-0 items-center justify-between px-3"
+      className="relative flex h-11 shrink-0 items-center justify-between border-b px-3"
       data-tauri-drag-region
     >
       <div className="pointer-events-none flex items-center gap-2" data-tauri-drag-region>
@@ -25,16 +25,16 @@ export function TitleBar() {
 
       {/* Centred independently of the side columns so it never drifts. */}
       <div className="absolute left-1/2 -translate-x-1/2">
-        <TabsList className="bg-muted/50 h-7 gap-0.5 rounded-lg p-0.5">
+        <TabsList className="bg-muted/60 h-7 gap-0.5 rounded-full p-0.5">
           <TabsTrigger
             value="translate"
-            className="pg-tab h-6 rounded-md px-3.5 text-xs font-medium"
+            className="pg-tab h-6 rounded-full px-3.5 text-xs font-medium"
           >
             Translate
           </TabsTrigger>
           <TabsTrigger
             value="correct"
-            className="pg-tab h-6 rounded-md px-3.5 text-xs font-medium"
+            className="pg-tab h-6 rounded-full px-3.5 text-xs font-medium"
           >
             Correct
           </TabsTrigger>

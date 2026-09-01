@@ -56,17 +56,17 @@ export function CorrectPanel() {
   return (
     <div className="flex h-full flex-col gap-2.5 p-3">
       {/* Mode + language */}
-      <div className="pg-sheen bg-card flex shrink-0 items-center gap-1 rounded-lg border p-1">
-        <div className="flex items-center gap-0.5">
+      <div className="bg-card flex shrink-0 items-center gap-1 rounded-2xl border p-1">
+        <div className="bg-muted/60 flex items-center gap-0.5 rounded-full p-0.5">
           {MODES.map((mode) => (
             <button
               key={mode.key}
               onClick={() => selectMode(mode.key)}
               title={mode.hint}
               className={cn(
-                "focus-visible:ring-ring/50 h-7 rounded-md px-3.5 text-xs font-medium transition-colors outline-none focus-visible:ring-2",
+                "focus-visible:ring-ring/50 h-6 rounded-full px-3.5 text-xs font-medium transition-colors outline-none focus-visible:ring-2",
                 correctionMode === mode.key
-                  ? "pg-gradient pg-glow text-white"
+                  ? "bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-accent/60 hover:text-foreground"
               )}
             >
@@ -85,7 +85,7 @@ export function CorrectPanel() {
       </div>
 
       {/* Input */}
-      <Card className="pg-sheen h-32 shrink-0 overflow-hidden">
+      <Card className="h-32 shrink-0 overflow-hidden">
         <CardContent className="relative">
           <textarea
             value={correctionInput}
@@ -126,7 +126,6 @@ export function CorrectPanel() {
 
       <div className="flex shrink-0 justify-end">
         <Button
-          variant="gradient"
           size="sm"
           onClick={() => correct()}
           disabled={!canCorrect}

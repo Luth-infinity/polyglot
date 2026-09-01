@@ -201,34 +201,30 @@ compte `anthropic-api-key`.
   par défaut, la build macOS n'aurait aucun backend et retomberait silencieusement sur
   le fichier en clair.
 
-### 11. Dégradé signature
+### 11. Direction artistique — reprise de Hublink
 
-Le violet du logo (`#B066F3`) part vers l'indigo. Le dégradé est défini **une seule
-fois**, en variables CSS (`--grad-from` / `--grad-via` / `--grad-to`) dans `index.css` ;
-aucun composant ne recompose un dégradé à la main.
+Polyglot suit désormais la DA de Hublink, celle du site et celle du shell de l'app, qui
+partagent la même famille de gris. Le violet en dégradé qui existait avant a été retiré :
+la DA Hublink ne signale ni par la couleur, ni par le mouvement.
 
-Classes disponibles, toutes préfixées `pg-` :
+**Ce qui la caractérise, et qu'il ne faut pas contredire :**
 
-| Classe | Usage |
-|---|---|
-| `pg-gradient` | fond dégradé (bouton principal, pastille de mode, badge) |
-| `pg-gradient-text` | le dégradé appliqué au texte (numéro de version) |
-| `pg-glow` | halo coloré + liseré interne, à coupler avec `pg-gradient` |
-| `pg-tab` | onglet actif en dégradé (règle CSS, pas un utilitaire) |
-| `pg-hairline` | filet dégradé en pied d'élément, remplace un `border-b` |
-| `pg-sheen` | reflet d'un pixel en haut d'une surface |
-| `pg-card` | voile lumineux vertical, appliqué par défaut à `<Card>` |
-| `pg-ambient` | deux halos radiaux en fond d'application |
-| `pg-pulse`, `pg-caret` | animations (respiration du badge, curseur de streaming) |
+- **Gris très légèrement froids**, teinte 265 — elle se devine, elle n'assombrit pas.
+  Aucune couleur d'accent. Seules subsistent les couleurs *sémantiques*, qui portent une
+  information : `--destructive` pour les erreurs, `--success` pour les corrections.
+- **L'action principale est un aplat encre.** En clair, un bouton noir sur texte blanc ;
+  en sombre, l'inverse. Jamais un bouton coloré.
+- **Les surfaces ressortent par leur élévation, jamais par une bordure marquée** — carte
+  plus claire que le fond, plus une ombre discrète. C'est écrit tel quel dans le
+  `globals.css` de la vitrine.
+- **La sélection se lit par l'élévation**, pas par la couleur : l'onglet ou la pastille
+  active passe sur `--card` avec une ombre, dans un conteneur `rounded-full`.
+- **Inter Tight**, resserrée (`-0.011em` sur le corps de texte, `-0.045em` sur les
+  titres via l'utilitaire `headline`). Les polices sont **auto-hébergées** via
+  `@fontsource-variable` : le site peut taper Google Fonts, une app de bureau non.
+- Beaucoup de `rounded-full` sur les contrôles, `rounded-2xl` sur les cartes.
 
-Le bouton shadcn a une variante `gradient` (`<Button variant="gradient">`) qui combine
-`pg-gradient` et `pg-glow`.
-
-**Piège à ne pas refaire :** les classes s'appelaient d'abord `accent-gradient` /
-`accent-glow`. `tailwind-merge` (utilisé par `cn()`) les range dans le même groupe que
-l'utilitaire `accent-<color>` de Tailwind et ne garde que la dernière — le dégradé
-disparaissait sans erreur ni avertissement. Toute classe maison doit porter un préfixe
-qui ne correspond à aucun groupe Tailwind, d'où `pg-`.
+Le logo violet reste : c'est la marque, pas la DA.
 
 ### 12. Mise à jour automatique
 
@@ -377,6 +373,11 @@ bloc `#[cfg(target_os = "macos")]` de `commands/paste.rs`.
   Avec `"all"`, Windows produisait MSI *et* NSIS, et la clé générique `windows-x86_64`
   de `latest.json` pointait vers le MSI : une mise à jour d'une installation NSIS aurait
   posé une seconde entrée à côté de la première.
+- **Une classe CSS maison ne doit jamais porter un préfixe que Tailwind connaît.**
+  `tailwind-merge`, derrière `cn()`, range `accent-gradient` dans le même groupe que
+  l'utilitaire `accent-<color>` et ne garde que la dernière classe du groupe : la règle
+  disparaissait sans erreur ni avertissement. D'où le préfixe `pg-` sur les rares classes
+  maison qui restent (`pg-tab`, `pg-caret`).
 - **Lire les logs, pas les supposer.** `... | Select-Object -Last N` en PowerShell
   bufferise toute la sortie jusqu'à la fin du pipeline : un build bloqué n'affiche alors
   rien du tout. Rediriger vers un fichier, ou passer par bash.

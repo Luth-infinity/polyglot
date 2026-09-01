@@ -46,7 +46,7 @@ export function CorrectionResult({ result }: Props) {
   const changeCount = result.changes.length;
 
   return (
-    <Card className="pg-sheen h-full overflow-hidden">
+    <Card className="h-full overflow-hidden">
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle>Result</CardTitle>

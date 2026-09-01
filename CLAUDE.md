@@ -342,17 +342,44 @@ presse-papiers, mais le `Cmd+V` n'est jamais envoyé.
 
 L'app est en `ActivationPolicy::Accessory` : pas d'icône dans le Dock, uniquement le tray.
 
-### À vérifier en premier sur Mac
+### Le code macOS ne se vérifie que par le CI
 
-Le code macOS de `paste.rs` et `clipboard_monitor.rs` a été réécrit **sans possibilité de
-test depuis Windows**. Points à contrôler :
+Tout le bloc `#[cfg(target_os = "macos")]` est **retiré à la compilation** sous Windows :
+`cargo check` y passe au vert sur du code macOS qui ne compile pas. C'est arrivé dès le
+premier passage — sept erreurs « cannot find macro sel » dans `window.rs`,
+`clipboard_monitor.rs` et `paste.rs`, parce que `msg_send!` se développe en `sel!` et
+qu'il faut importer les deux (`use objc::{class, msg_send, sel, sel_impl};`).
+
+**Ne jamais conclure qu'une modification macOS tient parce que `cargo check` passe sous
+Windows.** Pousser un tag (ou déclencher le workflow à la main) est le seul contrôle réel.
+
+Ce qui reste à vérifier à l'usage, que le compilateur ne dira pas :
 
 1. La double copie ouvre bien la fenêtre (et une copie simple ne l'ouvre pas).
 2. « Replace » recolle bien dans l'app précédente, et rapidement.
 3. `Ctrl+Shift+T` n'entre pas en conflit avec un raccourci macOS existant.
 
-Si le collage est trop rapide sur une app lente, augmenter le `sleep` de 120 ms dans le
+Si le collage part trop tôt sur une app lente, augmenter le `sleep` de 120 ms dans le
 bloc `#[cfg(target_os = "macos")]` de `commands/paste.rs`.
+
+### Pièges déjà payés — ne pas les refaire
+
+- **`.cargo/config.toml` est gitignoré.** Il fige le chemin exact du linker MSVC d'une
+  machine (`...MSVC/14.44.35207/...`) ; commité, il faisait échouer tout job Windows du
+  CI. Il reste nécessaire en local, donc : sur disque oui, dans le dépôt non.
+- **La clé de signature a un mot de passe, et ce n'est pas cosmétique.** Une clé sans mot
+  de passe oblige à passer `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` à la chaîne vide — que
+  ni Windows ni PowerShell ne savent transmettre (`$env:VAR = ""` *supprime* la variable).
+  Sans variable, Tauri pose la question sur l'entrée standard et le build reste bloqué
+  indéfiniment, après avoir produit des bundles non signés. Ne jamais regénérer la clé
+  sans mot de passe.
+- **Un seul installeur par plateforme** (`bundle.targets: ["nsis", "app", "dmg"]`).
+  Avec `"all"`, Windows produisait MSI *et* NSIS, et la clé générique `windows-x86_64`
+  de `latest.json` pointait vers le MSI : une mise à jour d'une installation NSIS aurait
+  posé une seconde entrée à côté de la première.
+- **Lire les logs, pas les supposer.** `... | Select-Object -Last N` en PowerShell
+  bufferise toute la sortie jusqu'à la fin du pipeline : un build bloqué n'affiche alors
+  rien du tout. Rediriger vers un fichier, ou passer par bash.
 
 ---
 

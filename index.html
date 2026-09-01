@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Polyglot</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body, #root { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+      /* Matches --background of the dark theme so there is no white flash on launch. */
+      html { background: oklch(0.152 0.005 285.8); }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

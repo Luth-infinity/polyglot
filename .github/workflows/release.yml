@@ -29,6 +29,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Les notes de version se calculent à partir du tag précédent : sans
+          # l'historique complet, il n'y a rien à comparer.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -48,6 +52,27 @@ jobs:
 
       - run: npm ci
 
+      # Le changelog du site lit le corps des releases. Un texte générique
+      # identique d'une version à l'autre n'apprendrait rien : on le compose à
+      # partir des messages de commit depuis le tag précédent.
+      - name: Compose les notes de version
+        id: notes
+        shell: bash
+        run: |
+          prev=$(git describe --tags --abbrev=0 "${{ github.ref_name }}^" 2>/dev/null || true)
+          if [ -n "$prev" ]; then
+            lignes=$(git log --no-merges --format='- %s' "$prev..${{ github.ref_name }}")
+          else
+            lignes=$(git log --no-merges --format='- %s' -n 8)
+          fi
+          {
+            echo 'body<<POLYGLOT_EOF'
+            echo "$lignes"
+            echo
+            echo "**Installation** : télécharger l'installeur de la plateforme. Les versions déjà installées se mettent à jour toutes seules."
+            echo 'POLYGLOT_EOF'
+          } >> "$GITHUB_OUTPUT"
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -61,9 +86,7 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: Polyglot ${{ github.ref_name }}
-          releaseBody: |
-            Installation : télécharger l'installeur correspondant à la plateforme.
-            Les versions déjà installées se mettent à jour toutes seules.
+          releaseBody: ${{ steps.notes.outputs.body }}
           # Publiée en brouillon : les trois jobs déposent leurs artefacts dans
           # la même release, on ne la rend visible qu'une fois tous arrivés.
           releaseDraft: true

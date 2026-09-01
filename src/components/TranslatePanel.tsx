@@ -24,21 +24,22 @@ export function TranslatePanel() {
   const setSourceText = useAppStore((s) => s.setSourceText);
   const setSourceLang = useAppStore((s) => s.setSourceLang);
   const setTargetLang = useAppStore((s) => s.setTargetLang);
+  const pendingAction = useAppStore((s) => s.pendingAction);
+  const setPendingAction = useAppStore((s) => s.setPendingAction);
 
   const { translate } = useTranslation();
   const { copy, copied } = useCopyButton();
   const outputRef = useRef<HTMLDivElement>(null);
 
-  // Runs once on mount when the clipboard trigger queued a translation. Using
-  // store state rather than a timed CustomEvent means the request can no longer
-  // be fired before this panel exists.
+  // Souscription réactive, et non un getState() au montage : la fenêtre est
+  // seulement masquée, jamais détruite, donc l'arbre React survit à toute la
+  // session. Lu au montage, ce drapeau n'aurait été vu qu'une fois au démarrage
+  // et chaque double-copie suivante serait restée sans effet.
   useEffect(() => {
-    const { pendingAction, setPendingAction } = useAppStore.getState();
-    if (pendingAction === "translate") {
-      setPendingAction(null);
-      translate();
-    }
-  }, [translate]);
+    if (pendingAction !== "translate") return;
+    setPendingAction(null);
+    translate();
+  }, [pendingAction, setPendingAction, translate]);
 
   // Keep the newest tokens in view while the answer streams in.
   useEffect(() => {

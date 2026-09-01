@@ -29,16 +29,18 @@ export function CorrectPanel() {
   const settingsLoaded = useAppStore((s) => s.settingsLoaded);
   const setCorrectionInput = useAppStore((s) => s.setCorrectionInput);
   const setCorrectionLang = useAppStore((s) => s.setCorrectionLang);
+  const pendingAction = useAppStore((s) => s.pendingAction);
+  const setPendingAction = useAppStore((s) => s.setPendingAction);
 
   const { correct } = useCorrection();
 
+  // Même raison que dans TranslatePanel : ce panneau est démonté au changement
+  // d'onglet, mais pas quand la fenêtre est simplement masquée.
   useEffect(() => {
-    const { pendingAction, setPendingAction } = useAppStore.getState();
-    if (pendingAction === "correct") {
-      setPendingAction(null);
-      correct();
-    }
-  }, [correct]);
+    if (pendingAction !== "correct") return;
+    setPendingAction(null);
+    correct();
+  }, [pendingAction, setPendingAction, correct]);
 
   const selectMode = (mode: CorrectionMode) => {
     if (mode === correctionMode) return;

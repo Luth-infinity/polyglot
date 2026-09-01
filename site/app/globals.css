@@ -1,0 +1,68 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Même famille que Hublink — gris très légèrement froids, aucune couleur
+     d'accent — mais le sol est inversé. Hublink est un site clair ; Polyglot
+     est une application sombre, et son site l'annonce dès le premier écran.
+     `ink` reste la couleur du texte, donc l'aplat d'un bouton principal se
+     pose en `bg-ink text-page`, et non `text-white` comme sur Hublink. */
+  --color-page: #08080a;
+  --color-canvas: #101014;
+  --color-card: #1a1a20;
+  --color-ink: #f4f4f6;
+  --color-ink-soft: #9a9aa6;
+  --color-line: #2a2a33;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+  body {
+    background: var(--color-page);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.011em;
+  }
+  ::selection {
+    background: var(--color-ink);
+    color: var(--color-page);
+  }
+}
+
+@utility headline {
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+/* Le motif propre à Polyglot : une phrase et sa traduction, la source en
+   retrait, la cible en pleine lumière. Le produit parle de texte, donc le
+   texte lui-même sert d'illustration plutôt qu'une capture de plus. */
+@utility paire {
+  display: grid;
+  gap: 0.5rem;
+}
+
+/* Les sections se révèlent au défilement, sans jamais rester invisibles si
+   l'observateur ne se déclenche pas : l'état par défaut est déjà lisible. */
+@utility reveal {
+  opacity: 1;
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  .js .reveal[data-visible='true'] {
+    opacity: 1;
+    transform: none;
+  }
+}

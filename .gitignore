@@ -31,3 +31,9 @@ release/
 
 # Chemin du linker MSVC propre a chaque machine : inutilisable ailleurs
 .cargo/
+
+# Site Next.js
+site/node_modules
+site/.next
+site/tsconfig.tsbuildinfo
+site/next-env.d.ts

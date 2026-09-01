@@ -24,6 +24,8 @@ src/                        front (React)
 
 scripts/make-latest-json.mjs   fabrique le manifeste de mise à jour après un build
 
+site/                       vitrine Next.js bilingue — voir site/README.md
+
 src-tauri/src/
   lib.rs                    setup : plugins, raccourci global, tray, monitor presse-papiers
   anthropic.rs              client HTTP mutualisé + SSE + retry + messages d'erreur
@@ -302,6 +304,25 @@ suivantes se mettront à jour toutes seules.
 **Le dépôt doit être public** — ou au moins ses assets de release. L'updater télécharge
 `latest.json` sans authentification : sur un dépôt privé, GitHub répond 404. Un jeton
 glissé dans la config n'est pas une option, il serait committé avec elle.
+
+---
+
+## Le site
+
+`site/` est une vitrine Next.js bilingue, déployable indépendamment de l'application.
+**Tout ce qui la concerne est dans `site/README.md`** : direction artistique, captures,
+changelog, module de dons.
+
+Deux choses à retenir d'ici :
+
+- **Le changelog du site lit les releases GitHub**, dont le corps est composé par le CI
+  à partir des messages de commit. Un commit mal écrit se retrouve donc sur le site. Les
+  quatre premières puces seulement sont retenues : mettre l'important en tête.
+- **`VERSION` dans `site/app/vitrine.tsx` est à bumper à la main** après une release.
+  Il construit les URL de téléchargement : le laisser en retard donne deux liens morts.
+  C'est le seul endroit du dépôt qui ne se met pas à jour tout seul.
+
+Le site n'est pas encore déployé : aucun hébergement n'a été configuré.
 
 ---
 

@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { UpdateBadge } from "./UpdateBadge";
+import { Wordmark } from "./Wordmark";
 import { useAppStore } from "@/store/appStore";
-import logo from "@/assets/logo.svg";
 
 /**
  * Frameless title bar. The tab switcher lives here rather than in a second row:
@@ -19,8 +19,8 @@ export function TitleBar() {
       className="relative flex h-11 shrink-0 items-center justify-between border-b px-3"
       data-tauri-drag-region
     >
-      <div className="pointer-events-none flex items-center gap-2" data-tauri-drag-region>
-        <img src={logo} alt="Polyglot" className="h-4.5 opacity-90" />
+      <div className="pointer-events-none flex items-center" data-tauri-drag-region>
+        <Wordmark />
       </div>
 
       {/* Centred independently of the side columns so it never drifts. */}

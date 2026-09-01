@@ -224,7 +224,17 @@ la DA Hublink ne signale ni par la couleur, ni par le mouvement.
   `@fontsource-variable` : le site peut taper Google Fonts, une app de bureau non.
 - Beaucoup de `rounded-full` sur les contrôles, `rounded-2xl` sur les cartes.
 
-Le logo violet reste : c'est la marque, pas la DA.
+**L'icône suit la même DA.** `SVG/icon-hublink.svg` est la source ; toutes les tailles
+se régénèrent avec `npx tauri icon SVG/icon-hublink.svg`. Squircle presque noir à dégradé
+sourd, glyphe blanc, et **deux éléments seulement à l'intérieur** — un « A » au trait et
+un bloc plein. L'ancienne icône contenait « A Ň » et « 語 » : illisible en dessous de
+48 px. Le bloc plein répond au panneau intérieur de l'icône Hublink, et c'est ce qui fait
+la parenté entre les deux applications.
+
+Le monogramme de la barre de titre (`components/Wordmark.tsx`) reprend **les mêmes tracés**,
+en `currentColor` et dans le repère du fichier source recadré : les deux ne peuvent pas
+diverger sans qu'on s'en aperçoive. Le nom est du texte, pas une image, donc il utilise
+la vraie Inter Tight.
 
 ### 12. Mise à jour automatique
 

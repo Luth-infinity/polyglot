@@ -1,0 +1,32 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    DA reprise de Hublink : squircle presque noir à dégradé très sourd, glyphe
+    blanc purement géométrique, deux éléments seulement à l'intérieur.
+
+    Le « A » latin face à un bloc plein qui abstrait un idéogramme : c'est le
+    contenu de l'ancienne bulle Polyglot (« A Ň » et « 語 »), réduit à ce qui
+    survit à 16 px. Le bloc plein répond au panneau intérieur de l'icône Hublink.
+  -->
+  <defs>
+    <linearGradient id="ground" x1="512" y1="0" x2="512" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2B2B31" />
+      <stop offset="1" stop-color="#0A0A0C" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" rx="230" fill="url(#ground)" />
+
+  <g stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Bulle : rectangle arrondi dont le bord bas laisse sortir la queue. -->
+    <path
+      d="M280 210 H745 A130 130 0 0 1 875 340 V530 A130 130 0 0 1 745 660 H455 L318 800 V660 H280 A130 130 0 0 1 150 530 V340 A130 130 0 0 1 280 210 Z"
+      stroke-width="58"
+    />
+    <!-- Le « A », au même trait que la bulle. -->
+    <path d="M300 545 L392 340 L484 545" stroke-width="54" />
+    <path d="M334 478 H450" stroke-width="54" />
+  </g>
+
+  <!-- Bloc plein : l'écriture non latine, réduite à sa densité. -->
+  <rect x="560" y="355" width="175" height="175" rx="44" fill="#FFFFFF" />
+</svg>

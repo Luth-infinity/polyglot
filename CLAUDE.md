@@ -240,38 +240,39 @@ Sans mot de passe, pour ne pas avoir à en saisir un à chaque build.
 
 #### Procédure de release
 
-L'endpoint interrogé est
-`https://github.com/Luth-infinity/polyglot/releases/latest/download/latest.json`.
-Le dépôt `Luth-infinity/polyglot` **n'existe pas encore** — le créer avant la première
-release (Polyglot n'est même pas sous git aujourd'hui).
+Tout passe par GitHub Actions (`.github/workflows/release.yml`) : **les binaires macOS
+ne peuvent se construire que sur macOS**, et l'intérêt de la mise à jour automatique
+serait nul s'il fallait ressortir le Mac à chaque version. Les runners macOS de GitHub
+s'en chargent.
 
-1. Aligner la version dans `src-tauri/tauri.conf.json` **et** `package.json`
-   (le script refuse de tourner si les deux divergent).
-2. Exporter la clé privée pour que le build signe les artefacts :
+1. Aligner la version dans `src-tauri/tauri.conf.json` **et** `package.json`, commiter.
+2. `git tag v0.2.0 && git push origin main --tags`
+3. Le workflow construit Windows + macOS (arm64 et Intel), signe les artefacts et
+   dépose une release **en brouillon** avec `latest.json`.
+4. Vérifier que les trois jobs ont bien déposé leurs fichiers, puis publier :
+   `gh release edit v0.2.0 --draft=false`
 
-   ```bash
-   export TAURI_SIGNING_PRIVATE_KEY="$(cat .tauri/polyglot.key)"   # macOS / bash
-   ```
+L'ordre compte : tant que la release est en brouillon, l'endpoint `releases/latest`
+continue de servir la version précédente — aucune machine ne voit une release
+incomplète.
 
-   ```powershell
-   $env:TAURI_SIGNING_PRIVATE_KEY = Get-Content .tauri/polyglot.key -Raw   # Windows
-   ```
+**Prérequis, à faire une seule fois** : `gh secret set TAURI_SIGNING_PRIVATE_KEY < .tauri/polyglot.key`
+Sans ce secret, les artefacts sortent non signés et l'updater les refuse.
 
-3. `npm run tauri build`
-4. `npm run release:manifest -- --notes "Corrige le collage dans Word"`
-   → remplit `release/` avec l'artefact renommé et `latest.json`.
-5. `gh release create v0.2.0 release/* --title "v0.2.0"`
+**Repli manuel** — `scripts/make-latest-json.mjs` fabrique le même `latest.json` à
+partir d'un build local, si le CI est indisponible. Il faut alors exporter
+`TAURI_SIGNING_PRIVATE_KEY` avant `npm run tauri build`, lancer
+`npm run release:manifest -- --notes "..."`, puis `gh release create`. Le script
+fusionne avec un `latest.json` déjà présent, pour qu'une machine n'écrase pas
+l'entrée de l'autre.
 
-**Pour couvrir les deux plateformes** (elles se construisent sur deux machines) :
-sur la seconde machine, récupérer d'abord le `latest.json` déjà publié dans `release/`,
-puis relancer les étapes 3–4 — le script fusionne au lieu d'écraser — et terminer par
-`gh release upload v0.2.0 release/latest.json release/<artefact> --clobber`.
-Un `latest.json` d'une version antérieure est ignoré volontairement : ses URLs
-pointeraient vers les binaires de l'ancienne release.
+**Amorçage** : la version installée aujourd'hui ne contient pas l'updater. La première
+build qui l'embarque doit être installée **à la main** sur chaque machine ; les
+suivantes se mettront à jour toutes seules.
 
-**Amorçage** : la version 0.1.0 actuellement installée ne contient pas l'updater. La
-première build qui l'embarque doit donc être installée **à la main** ; les suivantes
-se mettront à jour toutes seules.
+**Le dépôt doit être public** — ou au moins ses assets de release. L'updater télécharge
+`latest.json` sans authentification : sur un dépôt privé, GitHub répond 404. Un jeton
+glissé dans la config n'est pas une option, il serait committé avec elle.
 
 ---
 

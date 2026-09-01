@@ -1,0 +1,67 @@
+name: Release
+
+# Un tag `vX.Y.Z` poussé depuis n'importe quelle machine suffit : GitHub prête
+# les runners macOS, ce qui évite d'avoir à ressortir le Mac à chaque version.
+# Les binaires Apple ne peuvent pas se construire ailleurs que sur macOS.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  release:
+    permissions:
+      contents: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      # Compiler Tauri from scratch prend ~10 min ; le cache ramène ça à ~2 min
+      # sur les versions suivantes.
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+          key: ${{ matrix.target }}
+
+      - run: npm ci
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Sans cette clé les artefacts ne sont pas signés, et l'updater les
+          # refuse. Elle se règle une fois : gh secret set TAURI_SIGNING_PRIVATE_KEY
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: Polyglot ${{ github.ref_name }}
+          releaseBody: |
+            Installation : télécharger l'installeur correspondant à la plateforme.
+            Les versions déjà installées se mettent à jour toutes seules.
+          # Publiée en brouillon : les trois jobs déposent leurs artefacts dans
+          # la même release, on ne la rend visible qu'une fois tous arrivés.
+          releaseDraft: true
+          prerelease: false
+          args: --target ${{ matrix.target }}

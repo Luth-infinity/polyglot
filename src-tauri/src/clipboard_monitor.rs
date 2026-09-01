@@ -37,7 +37,7 @@ fn get_clipboard_count() -> u32 {
 
 #[cfg(target_os = "macos")]
 fn get_clipboard_count() -> u32 {
-    use objc::{class, msg_send};
+    use objc::{class, msg_send, sel, sel_impl};
     unsafe {
         let pb: *mut objc::runtime::Object = msg_send![class!(NSPasteboard), generalPasteboard];
         if pb.is_null() {

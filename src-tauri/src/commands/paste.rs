@@ -149,7 +149,7 @@ pub async fn replace_with_paste(app: AppHandle, text: String) -> Result<(), Stri
             // running process, which alone could cost several hundred ms.
             if prev_pid != 0 {
                 let _ = handle.run_on_main_thread(move || unsafe {
-                    use objc::{class, msg_send};
+                    use objc::{class, msg_send, sel, sel_impl};
                     let running: *mut objc::runtime::Object = msg_send![
                         class!(NSRunningApplication),
                         runningApplicationWithProcessIdentifier: prev_pid

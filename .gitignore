@@ -28,3 +28,6 @@ dist-ssr
 
 # Artefacts prets a publier, regeneres a chaque build
 release/
+
+# Chemin du linker MSVC propre a chaque machine : inutilisable ailleurs
+.cargo/

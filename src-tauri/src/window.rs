@@ -37,7 +37,7 @@ pub fn show_window(app: &AppHandle) {
     // macOS: save the PID of the frontmost application.
     #[cfg(target_os = "macos")]
     {
-        use objc::{class, msg_send};
+        use objc::{class, msg_send, sel, sel_impl};
         unsafe {
             let workspace: *mut objc::runtime::Object =
                 msg_send![class!(NSWorkspace), sharedWorkspace];

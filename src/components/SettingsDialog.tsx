@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { Check, Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { AlertTriangle, Check, Eye, EyeOff, KeyRound, Loader2, ShieldCheck } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ import { LanguageSelector } from "./LanguageSelector";
 import { UpdateSection } from "./UpdateBadge";
 import { useSettings } from "@/hooks/useSettings";
 import { Preferences, useAppStore } from "@/store/appStore";
+import { IS_MAC } from "@/lib/platform";
 
 // Registered as CONTROL+SHIFT+T on every platform, macOS included.
 const SHORTCUT = ["Ctrl", "Shift", "T"];
@@ -33,6 +35,15 @@ export function SettingsDialog() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [localPrefs, setLocalPrefs] = useState<Preferences>(preferences);
+  // Le backend peut retomber sur un fichier en clair si le trousseau est
+  // indisponible : autant le dire plutôt que de laisser croire au contraire.
+  const [storage, setStorage] = useState<"keychain" | "file" | "none" | null>(null);
+
+  const refreshStorage = useCallback(() => {
+    invoke<string>("api_key_storage")
+      .then((v) => setStorage(v as "keychain" | "file" | "none"))
+      .catch(() => setStorage(null));
+  }, []);
 
   // The store loads asynchronously, so the dialog has to resync when it opens —
   // otherwise it showed an empty key over a perfectly valid stored one.
@@ -42,14 +53,16 @@ export function SettingsDialog() {
       setLocalPrefs(preferences);
       setShowKey(false);
       setSaved(false);
+      refreshStorage();
     }
-  }, [settingsOpen, apiKey, preferences]);
+  }, [settingsOpen, apiKey, preferences, refreshStorage]);
 
   const handleSave = async () => {
     setSaving(true);
     try {
       if (keyInput !== apiKey) await saveApiKey(keyInput.trim());
       await savePreferences(localPrefs);
+      refreshStorage();
       setSaved(true);
       setTimeout(() => setSettingsOpen(false), 550);
     } finally {
@@ -97,9 +110,23 @@ export function SettingsDialog() {
                 <span className="sr-only">{showKey ? "Hide" : "Show"} key</span>
               </Button>
             </div>
-            <p className="text-muted-foreground text-[11px]">
-              Model: <span className="font-mono">claude-haiku-4-5</span>
-            </p>
+            <div className="text-muted-foreground flex items-center justify-between gap-2 text-[11px]">
+              <span>
+                Model: <span className="font-mono">claude-haiku-4-5</span>
+              </span>
+              {storage === "keychain" && (
+                <span className="text-success flex items-center gap-1">
+                  <ShieldCheck className="size-3" />
+                  {IS_MAC ? "In the macOS Keychain" : "In Windows Credential Manager"}
+                </span>
+              )}
+              {storage === "file" && (
+                <span className="flex items-center gap-1 text-amber-400">
+                  <AlertTriangle className="size-3" />
+                  Keychain unavailable — stored as plain text
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">

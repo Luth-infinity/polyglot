@@ -178,7 +178,30 @@ sur les erreurs de connexion, uniquement tant que rien n'a encore été streamé
 - Nouveaux primitives ajoutés à la main dans `components/ui/` : `card`, `input`, `label`,
   `separator`, `kbd`. `src/App.css` (mort) supprimé.
 
-### 10. Dégradé signature
+### 10. Clé API dans le trousseau système
+
+`settings.json` (dans `%APPDATA%/com.polyglot.app` ou `~/Library/Application Support`)
+stockait la clé Anthropic **en clair**. Ce fichier se retrouve dans les sauvegardes et
+les dossiers synchronisés, et se lit sans aucun privilège.
+
+Elle vit désormais dans le trousseau du système via la crate `keyring` :
+Windows Credential Manager, Keychain sur macOS. Service `com.polyglot.app`,
+compte `anthropic-api-key`.
+
+- **Migration automatique** : au premier `get_api_key`, une clé encore présente dans
+  `settings.json` est déplacée dans le trousseau, et effacée du fichier **seulement**
+  une fois l'écriture confirmée. Rien à faire côté utilisateur.
+- **Repli assumé** : si le trousseau est indisponible (verrouillé, session distante),
+  `set_api_key` retombe sur le fichier plutôt que de refuser d'enregistrer. La commande
+  `api_key_storage()` dit où la clé a réellement atterri (`keychain` / `file` / `none`),
+  et Settings l'affiche — un badge vert « In Windows Credential Manager », ou un
+  avertissement ambre « stored as plain text ». Ne jamais masquer ce repli.
+- Les deux backends natifs sont activés explicitement dans `Cargo.toml`
+  (`windows-native-keyring-store`, `apple-native-keyring-store`) : avec les features
+  par défaut, la build macOS n'aurait aucun backend et retomberait silencieusement sur
+  le fichier en clair.
+
+### 11. Dégradé signature
 
 Le violet du logo (`#B066F3`) part vers l'indigo. Le dégradé est défini **une seule
 fois**, en variables CSS (`--grad-from` / `--grad-via` / `--grad-to`) dans `index.css` ;
@@ -207,7 +230,7 @@ l'utilitaire `accent-<color>` de Tailwind et ne garde que la dernière — le d�
 disparaissait sans erreur ni avertissement. Toute classe maison doit porter un préfixe
 qui ne correspond à aucun groupe Tailwind, d'où `pg-`.
 
-### 11. Mise à jour automatique
+### 12. Mise à jour automatique
 
 Plugin officiel `tauri-plugin-updater` (+ `tauri-plugin-process` pour le redémarrage).
 L'app télécharge, vérifie la signature, installe et se relance — sur Windows **et**
@@ -347,8 +370,6 @@ bloc `#[cfg(target_os = "macos")]` de `commands/paste.rs`.
 
 ## Reste à faire / pistes
 
-- La clé API est stockée **en clair** dans `settings.json` (store Tauri). Passer par le
-  trousseau système (`keyring` crate) serait plus propre.
 - Le raccourci global est codé en dur ; le rendre configurable dans Settings.
 - Le dépôt `Luth-infinity/polyglot` reste à créer, sans quoi la mise à jour ne peut
   rien trouver. Mettre le projet sous git au passage : il n'y en a toujours pas.

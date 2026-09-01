@@ -79,6 +79,7 @@ pub fn run() {
             commands::paste::replace_with_paste,
             commands::paste::copy_to_clipboard,
             commands::settings::get_api_key,
+            commands::settings::api_key_storage,
             commands::settings::set_api_key,
             commands::settings::get_preferences,
             commands::settings::set_preferences,

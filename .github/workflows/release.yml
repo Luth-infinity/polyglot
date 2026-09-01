@@ -54,6 +54,10 @@ jobs:
           # Sans cette clé les artefacts ne sont pas signés, et l'updater les
           # refuse. Elle se règle une fois : gh secret set TAURI_SIGNING_PRIVATE_KEY
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          # La cle est protegee par mot de passe exactement pour cette raison :
+          # une chaine vide ne survit pas a un environnement Windows, et sans
+          # variable Tauri pose la question sur l'entree standard puis se bloque.
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: Polyglot ${{ github.ref_name }}

@@ -45,7 +45,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFERkQ2QUExNTBBQTk2QUQKUldTdGxxcFFvV3I5clI0S09sa0RLYUVPdExHSk85b2FUTHYxT0RVanAvQ05UbG9JWnZqUGVDSTgK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEI4ODFBNjBGMTlEMDMzOEUKUldTT005QVpENmFCdU0waUpQbkh3T2xaTjF2bFNhd2s0RzNDV3NUaXZCQVF0NEwvTHlDeFdJRlQK",
       "endpoints": [
         "https://github.com/Luth-infinity/polyglot/releases/latest/download/latest.json"
       ],

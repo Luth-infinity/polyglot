@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Reveal } from './reveal';
-import { getReleases } from './releases';
+import { getReleases, getTelechargements, PAGE_VERSIONS, type Telechargements } from './releases';
 import { SUPPORT_URL } from './support';
 import type { Contenu, Locale } from './content';
 import { LangLink } from './lang-link';
@@ -14,16 +14,6 @@ import { LangLink } from './lang-link';
 
 const REPO = 'https://github.com/Luth-infinity/polyglot';
 const RELEASE = `${REPO}/releases/latest`;
-// Les deux plateformes sortent du même passage d'intégration continue, donc
-// elles portent toujours le même numéro — contrairement à Hublink, où macOS se
-// construit à la main sur un Mac et accuse du retard.
-const VERSION = '0.4.0';
-
-const DOWNLOADS = {
-  mac: `${REPO}/releases/download/v${VERSION}/Polyglot_${VERSION}_aarch64.dmg`,
-  win: `${REPO}/releases/download/v${VERSION}/Polyglot_${VERSION}_x64-setup.exe`
-};
-
 type Props = { t: Contenu; locale: Locale };
 
 // L'anglais est servi à la racine, le français sous /fr.
@@ -94,12 +84,12 @@ function Nav({ t, locale }: Props) {
   );
 }
 
-function Hero({ t }: { t: Contenu }) {
+function Hero({ t, version }: { t: Contenu; version: string }) {
   return (
     <header id="top" className="mx-auto max-w-6xl px-4 pt-16 pb-10 text-center sm:pt-24">
       <p className="reveal bg-card ring-line text-ink-soft mb-5 inline-flex items-center gap-2 rounded-full px-3 py-1 text-[13px] ring-1">
         <span className="size-1.5 rounded-full bg-emerald-400" />
-        {t.hero.badge(VERSION)}
+        {t.hero.badge(version || '—')}
       </p>
       <h1 className="reveal headline mx-auto max-w-[16ch] text-[13vw] sm:text-[76px] lg:text-[92px]">
         {t.hero.titre}
@@ -370,7 +360,10 @@ async function Changelog({ t, locale }: Props) {
   );
 }
 
-function Telecharger({ t }: { t: Contenu }) {
+function Telecharger({ t, dl, locale }: { t: Contenu; dl: Telechargements; locale: Locale }) {
+  const principal =
+    'bg-ink text-page w-full rounded-full px-6 py-3.5 text-[15px] font-medium transition-transform hover:scale-[1.02] sm:w-auto';
+
   return (
     <section id="telecharger" className="px-4 pb-24">
       <div className="mx-auto max-w-6xl text-center">
@@ -383,28 +376,42 @@ function Telecharger({ t }: { t: Contenu }) {
         />
         <h2 className="reveal headline mt-6 text-[40px] sm:text-[54px]">{t.telecharger.titre}</h2>
         <p className="reveal text-ink-soft mx-auto mt-5 max-w-[60ch] text-[17px] leading-relaxed">
-          {t.telecharger.sous(VERSION)}
+          {t.telecharger.sous(dl.version || '—')}
         </p>
+
+        {/* Le visiteur ne télécharge qu'une plateforme : le script du <head>
+            pose `data-os` avant le rendu, et l'autre bouton ne s'affiche pas.
+            Plateforme inconnue ou JS coupé : les deux restent là. */}
         <div className="reveal mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <a
-            href={DOWNLOADS.win}
-            className="bg-ink text-page w-full rounded-full px-6 py-3.5 text-[15px] font-medium transition-transform hover:scale-[1.02] sm:w-auto"
-          >
+          <a data-cta="win" href={dl.win ?? PAGE_VERSIONS} className={principal}>
             {t.telecharger.win}
           </a>
-          <a
-            href={DOWNLOADS.mac}
-            className="bg-card ring-line hover:bg-canvas w-full rounded-full px-6 py-3.5 text-[15px] font-medium ring-1 transition-colors sm:w-auto"
-          >
+          <a data-cta="mac" href={dl.macArm ?? PAGE_VERSIONS} className={principal}>
             {t.telecharger.mac}
           </a>
         </div>
-        <p className="reveal text-ink-soft mt-5 text-[13px]">
-          {t.telecharger.noteAvant}
-          <a href={RELEASE} className="hover:text-ink underline underline-offset-4">
+
+        <p className="reveal text-ink-soft mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[13px]">
+          <a
+            data-cta="mac"
+            href={dl.macIntel ?? PAGE_VERSIONS}
+            className="hover:text-ink underline underline-offset-4"
+          >
+            {t.telecharger.macIntel}
+          </a>
+          <a href={PAGE_VERSIONS} className="hover:text-ink underline underline-offset-4">
             {t.telecharger.noteLien}
           </a>
-          {t.telecharger.noteApres}
+          <a
+            href={locale === 'fr' ? '/fr/api-key' : '/api-key'}
+            className="hover:text-ink underline underline-offset-4"
+          >
+            {t.cle.lien}
+          </a>
+        </p>
+
+        <p className="reveal text-ink-soft mx-auto mt-5 max-w-[60ch] text-[13px] leading-relaxed">
+          {t.telecharger.signature}
         </p>
       </div>
     </section>
@@ -478,14 +485,16 @@ function Footer({ t }: { t: Contenu }) {
   );
 }
 
-export default function Vitrine({ t, locale }: Props) {
+export default async function Vitrine({ t, locale }: Props) {
+  const dl = await getTelechargements();
+
   return (
     <>
       <Reveal />
       <Nav t={t} locale={locale} />
       <main lang={locale} className="mx-auto max-w-[1600px] pb-px">
         <div className="bg-canvas mt-4 rounded-[28px] pt-2 pb-px">
-          <Hero t={t} />
+          <Hero t={t} version={dl.version} />
           <Shot t={t} />
           <Paires t={t} />
           <Pourquoi t={t} />
@@ -495,7 +504,7 @@ export default function Vitrine({ t, locale }: Props) {
           <Correction t={t} />
           <Confiance t={t} />
           <Changelog t={t} locale={locale} />
-          <Telecharger t={t} />
+          <Telecharger t={t} dl={dl} locale={locale} />
           <Soutenir t={t} />
           <Footer t={t} />
         </div>

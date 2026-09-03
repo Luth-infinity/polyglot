@@ -5,7 +5,17 @@ export type Release = {
   points: string[];
 };
 
-const API = 'https://api.github.com/repos/Luth-infinity/polyglot/releases';
+const DEPOT = 'Luth-infinity/polyglot';
+const API = `https://api.github.com/repos/${DEPOT}/releases`;
+
+export const PAGE_VERSIONS = `https://github.com/${DEPOT}/releases`;
+
+export type Telechargements = {
+  version: string;
+  win: string | null;
+  macArm: string | null;
+  macIntel: string | null;
+};
 
 /**
  * Isole la partie d'une note de version rédigée dans la langue voulue.
@@ -35,13 +45,16 @@ function summarize(body: string): string[] {
 /**
  * Les versions viennent des releases GitHub : le changelog du site se met à
  * jour tout seul à chaque publication, sans double saisie qui finirait par
- * diverger. Revalidé toutes les heures.
+ * diverger.
+ *
+ * Revalidé toutes les dix minutes : à une heure, le journal affichait encore
+ * l'avant-dernière version longtemps après sa publication.
  */
 export async function getReleases(locale: 'en' | 'fr' = 'fr'): Promise<Release[]> {
   try {
     const res = await fetch(API, {
       headers: { Accept: 'application/vnd.github+json' },
-      next: { revalidate: 3600 }
+      next: { revalidate: 600 }
     });
     if (!res.ok) return [];
     const data = (await res.json()) as {
@@ -69,5 +82,49 @@ export async function getReleases(locale: 'en' | 'fr' = 'fr'): Promise<Release[]
   } catch {
     // Le site doit se construire même si l'API GitHub est indisponible.
     return [];
+  }
+}
+
+
+/**
+ * Les liens de téléchargement sont lus sur la dernière release, jamais écrits
+ * à la main : un numéro de version en dur dans la page finit toujours par
+ * pointer vers un fichier supprimé.
+ *
+ * Les trois binaires ont des noms distincts — `x64-setup.exe` pour Windows,
+ * `aarch64.dmg` pour les Mac Apple Silicon, `x64.dmg` pour les Mac Intel. Le
+ * `.exe` se reconnaît à son extension, les deux `.dmg` à leur architecture.
+ *
+ * Une plateforme peut manquer si sa construction a échoué : le bouton renvoie
+ * alors vers la page des versions plutôt que vers le vide.
+ */
+export async function getTelechargements(): Promise<Telechargements> {
+  try {
+    const res = await fetch(API, {
+      headers: { Accept: 'application/vnd.github+json' },
+      next: { revalidate: 600 }
+    });
+    if (!res.ok) return { version: '', win: null, macArm: null, macIntel: null };
+
+    const data = (await res.json()) as {
+      tag_name: string;
+      draft: boolean;
+      prerelease: boolean;
+      assets: { name: string; browser_download_url: string }[];
+    }[];
+    const derniere = data.filter((r) => !r.draft && !r.prerelease)[0];
+    if (!derniere) return { version: '', win: null, macArm: null, macIntel: null };
+
+    const url = (test: (nom: string) => boolean): string | null =>
+      derniere.assets.find((a) => test(a.name))?.browser_download_url ?? null;
+
+    return {
+      version: derniere.tag_name.replace(/^v/, ''),
+      win: url((n) => n.endsWith('.exe')),
+      macArm: url((n) => n.endsWith('.dmg') && n.includes('aarch64')),
+      macIntel: url((n) => n.endsWith('.dmg') && !n.includes('aarch64'))
+    };
+  } catch {
+    return { version: '', win: null, macArm: null, macIntel: null };
   }
 }

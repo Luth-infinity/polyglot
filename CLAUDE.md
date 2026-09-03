@@ -318,11 +318,25 @@ Deux choses à retenir d'ici :
 - **Le changelog du site lit les releases GitHub**, dont le corps est composé par le CI
   à partir des messages de commit. Un commit mal écrit se retrouve donc sur le site. Les
   quatre premières puces seulement sont retenues : mettre l'important en tête.
-- **`VERSION` dans `site/app/vitrine.tsx` est à bumper à la main** après une release.
-  Il construit les URL de téléchargement : le laisser en retard donne deux liens morts.
-  C'est le seul endroit du dépôt qui ne se met pas à jour tout seul.
+- **Plus rien n'est à bumper à la main.** `VERSION` construisait les URL de
+  téléchargement et donnait deux liens morts dès qu'on l'oubliait ; `getTelechargements()`
+  lit désormais les fichiers de la dernière release — le `.exe`, le `.dmg` Apple Silicon
+  et le `.dmg` Intel — et le numéro affiché vient de la même source.
+- Le journal est revalidé toutes les **dix** minutes, pas toutes les heures : à une heure,
+  il affichait encore l'avant-dernière version longtemps après sa publication.
 
-Le site n'est pas encore déployé : aucun hébergement n'a été configuré.
+Le site est déployé sur **`polyglot-luth.vercel.app`** (projet Vercel `polyglot-site`),
+par `vercel --prod` depuis `site/`. Il n'est pas relié au dépôt : le déploiement est
+manuel, à faire après chaque release pour que le journal soit à jour tout de suite.
+
+`vercel link` **réécrit le `.gitignore` du dossier** en n'y laissant que ses propres
+entrées — vérifier que `.next` y figure encore après avoir relié le projet. Et un projet
+Vercel créé à la main n'a aucun préréglage de framework : il sert `public/` en statique et
+répond 404, d'où le `vercel.json` qui fixe `framework: nextjs`.
+
+Le tutoriel de la clé Anthropic vit dans `site/app/tutoriel.tsx`, servi sur `/api-key` et
+`/fr/api-key`. Ses écrans sont **dessinés** : la console d'Anthropic exige un compte, donc
+aucune capture n'est possible sans photographier le compte de quelqu'un.
 
 ---
 
@@ -430,8 +444,6 @@ bloc `#[cfg(target_os = "macos")]` de `commands/paste.rs`.
 ## Reste à faire / pistes
 
 - Le raccourci global est codé en dur ; le rendre configurable dans Settings.
-- Le dépôt `Luth-infinity/polyglot` reste à créer, sans quoi la mise à jour ne peut
-  rien trouver. Mettre le projet sous git au passage : il n'y en a toujours pas.
 - Les notes de version affichées par l'API (`update.body`) sont récupérées mais pas
   encore montrées dans l'UI.
 - Le champ `preferences.theme` existe mais n'est pas utilisé — l'app force le mode sombre.

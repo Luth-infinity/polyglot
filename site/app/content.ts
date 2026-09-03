@@ -38,12 +38,24 @@ export type Contenu = {
     titre: string;
     sous: (version: string) => string;
     mac: string;
+    macIntel: string;
     win: string;
     noteAvant: string;
     noteLien: string;
     noteApres: string;
+    signature: string;
   };
   soutenir: { titre: string; texte: string; cafe: string; etoile: string };
+  cle: {
+    lien: string;
+    titre: string;
+    chapeau: string;
+    pourquoi: string;
+    etapes: { titre: string; texte: string }[];
+    cout: { titre: string; texte: string };
+    securite: { titre: string; texte: string };
+    retour: string;
+  };
   footer: { signature: string; github: string; versions: string; bug: string; soutenir: string };
 };
 
@@ -208,11 +220,14 @@ export const fr: Contenu = {
     titre: 'Installer Polyglot',
     sous: (version) =>
       `Version ${version}, disponible pour Windows et macOS. Les versions suivantes s'installeront toutes seules depuis l'application.`,
-    mac: 'Télécharger pour macOS',
+    mac: 'Télécharger pour Mac',
+    macIntel: 'Mac Intel',
     win: 'Télécharger pour Windows',
     noteAvant: 'Toutes les versions et leurs notes sont sur la ',
     noteLien: 'page des releases',
-    noteApres: ". Sur macOS, pensez à autoriser Polyglot dans les réglages d'accessibilité."
+    noteApres: ". Sur macOS, pensez à autoriser Polyglot dans les réglages d'accessibilité.",
+    signature:
+      "L'application n'est signée par aucun éditeur : Windows peut afficher un avertissement SmartScreen (« Informations complémentaires » puis « Exécuter quand même »), et sur macOS il faut l'ouvrir la première fois par un clic droit puis « Ouvrir ». Le bouton Mac propose la version Apple Silicon ; les Mac Intel prennent le lien juste au-dessus."
   },
   soutenir: {
     titre: 'Si Polyglot vous fait gagner du temps',
@@ -220,6 +235,52 @@ export const fr: Contenu = {
       "L'application est gratuite et le restera. Si elle vous sert au quotidien, un café fait plaisir — et une étoile sur le dépôt aussi, ça ne coûte rien.",
     cafe: 'Offrir un café',
     etoile: 'Mettre une étoile'
+  },
+  cle: {
+    lien: 'Comment obtenir une clé',
+    titre: 'Obtenir une clé Anthropic',
+    chapeau:
+      "Cinq minutes, une adresse e-mail et quelques euros de crédit. À la fin vous aurez une suite de caractères commençant par sk-ant- à coller dans les réglages de Polyglot.",
+    pourquoi:
+      "Polyglot n'a pas de serveur : votre texte part directement chez Anthropic, avec votre propre compte. C'est ce qui permet à l'application de ne rien conserver et de ne rien vous facturer — mais il faut cette clé pour que le service sache que c'est bien vous.",
+    etapes: [
+      {
+        titre: 'Créez un compte sur console.anthropic.com',
+        texte:
+          "Rendez-vous sur console.anthropic.com. La création de compte se fait avec une adresse e-mail ou un compte Google, et prend moins d'une minute."
+      },
+      {
+        titre: 'Créditez le compte',
+        texte:
+          "Dans Billing, ajoutez un premier crédit — cinq euros suffisent très largement pour des mois d'usage quotidien. Sans crédit, la clé existe mais chaque appel est refusé."
+      },
+      {
+        titre: 'Ouvrez « API Keys »',
+        texte:
+          "La console range ses rubriques dans la colonne de gauche. Celle qui nous intéresse s'appelle API Keys, et vous pouvez y aller directement depuis le lien ci-dessus."
+      },
+      {
+        titre: 'Créez la clé et copiez-la',
+        texte:
+          "« Create Key » demande un nom — « Polyglot » fera l'affaire. La clé n'est affichée qu'une seule fois : copiez-la avant de fermer, sinon il faudra en créer une autre."
+      },
+      {
+        titre: 'Collez-la dans Polyglot',
+        texte:
+          "Ouvrez les réglages depuis l'icône du tray, champ Clé API. Elle est rangée dans le trousseau du système, pas en clair sur le disque."
+      }
+    ],
+    cout: {
+      titre: 'Combien ça coûte ?',
+      texte:
+        "Polyglot utilise Claude Haiku, le modèle le moins cher de la gamme, et ne lui envoie que le texte sélectionné. Une traduction de paragraphe coûte une fraction de centime : en usage quotidien, un premier crédit de cinq euros dure des mois. Vous voyez la consommation réelle dans la console."
+    },
+    securite: {
+      titre: 'Où va la clé ?',
+      texte:
+        "Elle est rangée dans le trousseau du système — Credential Manager sous Windows, Keychain sur macOS — et jamais écrite en clair sur le disque. Elle ne quitte votre machine que vers l'API d'Anthropic, et Polyglot n'a aucun serveur par lequel elle pourrait transiter."
+    },
+    retour: "Retour à l'accueil"
   },
   footer: {
     signature: 'Polyglot — traduire et corriger sur place',
@@ -388,11 +449,14 @@ export const en: Contenu = {
     titre: 'Install Polyglot',
     sous: (version) =>
       `Version ${version}, available for Windows and macOS. Later versions install themselves from inside the app.`,
-    mac: 'Download for macOS',
+    mac: 'Download for Mac',
+    macIntel: 'Mac Intel',
     win: 'Download for Windows',
     noteAvant: 'Every release and its notes live on the ',
     noteLien: 'releases page',
-    noteApres: '. On macOS, remember to allow Polyglot in the accessibility settings.'
+    noteApres: '. On macOS, remember to allow Polyglot in the accessibility settings.',
+    signature:
+      'The app is not signed by any publisher: Windows may show a SmartScreen warning ("More info" then "Run anyway"), and on macOS you need to open it the first time with a right click then "Open". The Mac button offers the Apple Silicon build; Intel Macs take the link just above.'
   },
   soutenir: {
     titre: 'If Polyglot saves you time',
@@ -400,6 +464,52 @@ export const en: Contenu = {
       'The app is free and will stay that way. If it earns its place in your day, a coffee is always welcome — and a star on the repository costs nothing at all.',
     cafe: 'Buy a coffee',
     etoile: 'Leave a star'
+  },
+  cle: {
+    lien: 'How to get a key',
+    titre: 'Getting an Anthropic key',
+    chapeau:
+      'Five minutes, an email address and a few euros of credit. At the end you will have a string starting with sk-ant- to paste into the Polyglot settings.',
+    pourquoi:
+      'Polyglot has no server: your text goes straight to Anthropic, on your own account. That is what lets the app keep nothing and charge you nothing — but the key is what tells the service it is really you.',
+    etapes: [
+      {
+        titre: 'Create an account at console.anthropic.com',
+        texte:
+          'Go to console.anthropic.com. Signing up takes an email address or a Google account, and less than a minute.'
+      },
+      {
+        titre: 'Add credit',
+        texte:
+          'Under Billing, add a first credit — five euros is plenty for months of daily use. Without credit the key exists but every call is refused.'
+      },
+      {
+        titre: 'Open "API Keys"',
+        texte:
+          'The console lists its sections in the left column. The one we want is API Keys, and the link above takes you straight there.'
+      },
+      {
+        titre: 'Create the key and copy it',
+        texte:
+          '"Create Key" asks for a name — "Polyglot" will do. The key is shown only once: copy it before closing, or you will have to create another.'
+      },
+      {
+        titre: 'Paste it into Polyglot',
+        texte:
+          'Open the settings from the tray icon, API key field. It is stored in the system keychain, never in plain text on disk.'
+      }
+    ],
+    cout: {
+      titre: 'What does it cost?',
+      texte:
+        'Polyglot uses Claude Haiku, the cheapest model of the range, and sends it only the selected text. Translating a paragraph costs a fraction of a cent: in daily use, a first five-euro credit lasts months. The console shows your actual usage.'
+    },
+    securite: {
+      titre: 'Where does the key go?',
+      texte:
+        'It is stored in the system keychain — Credential Manager on Windows, Keychain on macOS — and never written in plain text on disk. It leaves your machine only for the Anthropic API, and Polyglot has no server for it to pass through.'
+    },
+    retour: 'Back to the home page'
   },
   footer: {
     signature: 'Polyglot — translate and proofread in place',

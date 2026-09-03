@@ -66,3 +66,12 @@
     transform: none;
   }
 }
+
+/* Le visiteur ne télécharge qu'une plateforme : lui montrer les deux binaires
+   lui demande de trancher une question dont il connaît déjà la réponse. Le
+   script du <head> pose `data-os` avant le rendu. Plateforme inconnue (ou JS
+   coupé) : rien n'est masqué, tous les liens restent là. */
+html[data-os='mac'] [data-cta='win'],
+html[data-os='win'] [data-cta='mac'] {
+  display: none;
+}

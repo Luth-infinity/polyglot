@@ -22,6 +22,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `document.documentElement.classList.add('js')`
           }}
         />
+        {/* Note la plateforme avant le rendu : le CSS peut alors masquer le
+            binaire qui ne concerne pas le visiteur, sans qu'il apparaisse une
+            fraction de seconde. Un iPad se déclare « MacIntel » : on le
+            distingue par le tactile, sinon on proposerait un .dmg à quelqu'un
+            qui ne peut rien en faire. Plateforme inconnue : les deux boutons
+            restent affichés. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try {
+  var ua = navigator.userAgent || '';
+  var pf = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '';
+  var tactile = navigator.maxTouchPoints > 1;
+  var os = '';
+  if (/win/i.test(pf) || /Windows/.test(ua)) os = 'win';
+  else if ((/mac/i.test(pf) || /Mac OS X/.test(ua)) && !tactile) os = 'mac';
+  if (os) document.documentElement.dataset.os = os;
+} catch (e) {}`
+          }}
+        />
       </head>
       <body className="font-sans">{children}</body>
     </html>

@@ -56,7 +56,14 @@ export type Contenu = {
     securite: { titre: string; texte: string };
     retour: string;
   };
-  footer: { signature: string; github: string; versions: string; bug: string; soutenir: string };
+  footer: {
+    signature: string;
+    suite: string;
+    github: string;
+    versions: string;
+    bug: string;
+    soutenir: string;
+  };
 };
 
 export const fr: Contenu = {
@@ -284,6 +291,7 @@ export const fr: Contenu = {
   },
   footer: {
     signature: 'Polyglot — traduire et corriger sur place',
+    suite: 'Les autres apps',
     github: 'GitHub',
     versions: 'Versions',
     bug: 'Signaler un problème',
@@ -513,6 +521,7 @@ export const en: Contenu = {
   },
   footer: {
     signature: 'Polyglot — translate and proofread in place',
+    suite: 'The other apps',
     github: 'GitHub',
     versions: 'Releases',
     bug: 'Report an issue',

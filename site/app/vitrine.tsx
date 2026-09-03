@@ -13,6 +13,8 @@ import { LangLink } from './lang-link';
  */
 
 const REPO = 'https://github.com/Luth-infinity/polyglot';
+// Le sommaire des applications : Polyglot n'est pas seul.
+const SUITE = 'https://luth-apps.vercel.app';
 const RELEASE = `${REPO}/releases/latest`;
 type Props = { t: Contenu; locale: Locale };
 
@@ -460,6 +462,9 @@ function Footer({ t }: { t: Contenu }) {
           {t.footer.signature}
         </p>
         <div className="text-ink-soft flex items-center gap-5 text-[14px]">
+          <a href={SUITE} className="hover:text-ink">
+            {t.footer.suite}
+          </a>
           <a href={REPO} className="hover:text-ink">
             {t.footer.github}
           </a>
